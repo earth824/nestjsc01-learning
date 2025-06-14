@@ -1,3 +1,4 @@
+import { Blogservice } from '@/blog/blog.service';
 import { CreateBlogDto } from '@/blog/dtos/create-blog.dto';
 import { GetAllQueryDto } from '@/blog/dtos/get-all-query.dto';
 import { UpdateBlogDto } from '@/blog/dtos/update-blog.dto';
@@ -9,6 +10,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Param,
   ParseBoolPipe,
   ParseIntPipe,
@@ -22,10 +24,18 @@ import {
 
 @Controller('blogs')
 export class BlogController {
+  constructor(
+    private readonly blogService: Blogservice,
+    @Inject('CFG') private readonly cfgConst: string
+  ) {
+    console.log(cfgConst);
+  }
+
   @Get() // GET /blogs
   getAll(@Query() query: GetAllQueryDto) {
     // { title?: string; page?: number; limit?: number; startDate?: Date; endDate?:Date }
     // SELECT * FROM blogs
+    const result = this.blogService.findAll();
 
     return 'GET /blogs: BlogController';
   }
@@ -55,7 +65,7 @@ export class BlogController {
   }
 
   @Post() // POST /blogs
-  create(
+  async create(
     @Body(
       new ValidationPipe({
         whitelist: true,
@@ -66,9 +76,13 @@ export class BlogController {
     body: CreateBlogDto
   ) {
     // { title: string, body: string, isPublish: boolean, expires: Date }
+    // logic for creating blog ==> Service
+    // const blogService = new Blogservice
+    // this.blogService.create()
     console.log(body);
     console.log(body instanceof CreateBlogDto);
-    return 'POST /blogs';
+    const result = await this.blogService.create(body);
+    return result;
   }
 
   // @HttpCode(204)

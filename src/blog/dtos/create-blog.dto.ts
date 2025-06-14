@@ -1,41 +1,43 @@
-import { Type } from 'class-transformer';
-import {
-  IsBoolean,
-  IsDate,
-  IsEmail,
-  IsInt,
-  IsNotEmpty,
-  IsOptional,
-  IsString
-} from 'class-validator';
+// import { Type } from 'class-transformer';
+// import {
+//   IsBoolean,
+//   IsDate,
+//   IsEmail,
+//   IsInt,
+//   IsNotEmpty,
+//   IsOptional,
+//   IsString
+// } from 'class-validator';
 
-export class CreateBlogDto {
-  @IsString()
-  @IsNotEmpty({ message: 'Title cannot be empty' })
-  title: string;
+import { IsNotEmpty, IsString } from 'class-validator';
 
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  body?: string;
+// export class CreateBlogDto {
+//   @IsString()
+//   @IsNotEmpty({ message: 'Title cannot be empty' })
+//   title: string;
 
-  @IsBoolean()
-  isPublish: boolean;
+//   @IsOptional()
+//   @IsString()
+//   @IsNotEmpty()
+//   body?: string;
 
-  @Type(() => Date)
-  @IsDate({ message: 'Invalid date ISO8601 format for expires date' })
-  expires: Date;
+//   @IsBoolean()
+//   isPublish: boolean;
 
-  @Type(() => Number)
-  @IsInt()
-  count: number;
+//   @Type(() => Date)
+//   @IsDate({ message: 'Invalid date ISO8601 format for expires date' })
+//   expires: Date;
 
-  @IsEmail({})
-  email: string;
+//   @Type(() => Number)
+//   @IsInt()
+//   count: number;
 
-  @IsString()
-  user: string;
-}
+//   @IsEmail({})
+//   email: string;
+
+//   @IsString()
+//   user: string;
+// }
 
 // zod, joi
 // const dto = new CreateBlogDto(); // instance of CreateBlogDto class
@@ -47,3 +49,9 @@ export class CreateBlogDto {
 // Nest transform request body(plain object) into instance of a class (class-transformer)
 // Nest validate instance of a class (class validator)
 // check validaiton fail or success (if fail throw error) (if success pass to controller handle function)
+
+export class CreateBlogDto {
+  @IsString()
+  @IsNotEmpty()
+  content: string;
+}

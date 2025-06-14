@@ -17,3 +17,21 @@ async function bootstrap() {
 }
 
 void bootstrap();
+
+// Last Tuesday
+// Nest? server side app: HTTP, WS, Microservice (express, fastify)
+// Module? project structure using module: Main ==> App Module
+// express group by controller, routing, service
+// Controller? handle routing: incoming request and sent the response
+// Pipe? Validate and transform
+// DI (dependency injection)
+
+// Today(8/6/2025)
+// Recap OOP, Dependency Injection
+// Service?, Provider?, Authentication?, Prisma ORM, JWT, Guard
+
+// Controller ==> handle routing, logic ==> Service
+
+// Today(14/6/2025)
+// Authentication(cont.) login, Configuration module Type safe (PORT: 0 to 65535, SECRET_KEY) : (process.env.SECRET_KEY)? BAD_PRACTICE
+// GUARD (proteced resource), Custom Decorator
