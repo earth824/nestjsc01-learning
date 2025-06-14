@@ -3,14 +3,21 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UsersModule } from '@/users/users.module';
 import { BcryptService } from './providers/bcrypt.service';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import jwtConfig from '@/config/jwt.config';
 import { ConfigType } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from '@/auth/guards/auth.guard';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, BcryptService, { provide: 'KEY', useValue: 'TEST' }],
-  exports: [AuthService],
+  providers: [
+    AuthService,
+    BcryptService,
+    { provide: 'KEY', useValue: 'TEST' }
+    // { provide: APP_GUARD, useClass: AuthGuard }
+  ],
+  exports: [AuthService, JwtModule],
   imports: [
     forwardRef(() => UsersModule),
     // JwtModule.register({signOptions: {}}),

@@ -1,8 +1,19 @@
 import { AuthService } from '@/auth/auth.service';
 import { LoginDto } from '@/auth/dtos/login.dto';
 import { RegisterDto } from '@/auth/dtos/register.dto';
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { AuthGuard } from '@/auth/guards/auth.guard';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Patch,
+  Post,
+  UseGuards
+} from '@nestjs/common';
 
+// @UseGuards(AuthGuard)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -21,5 +32,16 @@ export class AuthController {
     @Body() loginDto: LoginDto
   ): Promise<{ access_token: string; refresh_token: string }> {
     return this.authService.login(loginDto);
+  }
+
+  // GET /auth/me
+  @Get('me')
+  getMe() {
+    return 'GET /auth/me';
+  }
+
+  @Patch('change-password')
+  changePassword() {
+    return 'PATCH /auth/chang-password';
   }
 }
