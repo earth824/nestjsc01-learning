@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@/auth/guards/auth.guard';
+import { GlobalGuard } from '@/auth/guards/global.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,10 +11,11 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       transform: true,
-      forbidNonWhitelisted: true
+      forbidNonWhitelisted: true,
+      validateCustomDecorators: true
     })
   );
-  // app.useGlobalGuards();
+  // app.useGlobalGuards(new GlobalGuard());
 
   await app.listen(process.env.PORT ?? 3000);
 }
@@ -35,5 +37,8 @@ void bootstrap();
 // Controller ==> handle routing, logic ==> Service
 
 // Today(14/6/2025)
-// Authentication(cont.) login, Configuration module Type safe (PORT: 0 to 65535, SECRET_KEY) : (process.env.SECRET_KEY)? BAD_PRACTICE
+// Authentication(cont.) login, JWT, Configuration module Type safe (PORT: 0 to 65535, SECRET_KEY) : (process.env.SECRET_KEY)? BAD_PRACTICE
 // GUARD (proteced resource), Custom Decorator
+
+// Today(15/6/2025)
+// Guard excecution Order, Custom Decorator, Reflect-metadata, ParamDecorator

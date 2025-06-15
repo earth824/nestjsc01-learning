@@ -2,6 +2,9 @@ import { Blogservice } from '@/blog/blog.service';
 import { CreateBlogDto } from '@/blog/dtos/create-blog.dto';
 import { GetAllQueryDto } from '@/blog/dtos/get-all-query.dto';
 import { UpdateBlogDto } from '@/blog/dtos/update-blog.dto';
+import { BlogsFilter } from '@/blogs/filters/blogs.filter';
+import { CurrentUser } from '@/common/decorators/current-user.decorator';
+import { CurrentUserDto } from '@/common/dtos/current-user.dto';
 import {
   BadRequestException,
   Body,
@@ -18,9 +21,15 @@ import {
   Post,
   Put,
   Query,
+  Req,
+  SetMetadata,
   UnauthorizedException,
+  UseFilters,
   ValidationPipe
 } from '@nestjs/common';
+import { Request } from 'express';
+
+const Role = (...roles: string[]) => SetMetadata('ROLE', roles);
 
 @Controller('blogs')
 export class BlogController {
@@ -58,12 +67,18 @@ export class BlogController {
 
   @Post('comment{/:commentId}')
   // createComment(@Body() body: any) {
-  createComment(@Body('user') user: any) {
+  createComment(
+    @Body('user') user: any,
+    @CurrentUser()
+    currentUser: CurrentUserDto
+  ) {
     // console.log(body);
     console.log(user);
     return 'Create comment';
   }
 
+  @Role('admin', 'shop')
+  // @SetMetadata('ROLE', 'admin')
   @Post() // POST /blogs
   async create(
     @Body(
@@ -73,15 +88,18 @@ export class BlogController {
         transform: true
       })
     )
-    body: CreateBlogDto
+    body: CreateBlogDto,
+    @CurrentUser()
+    currentUser: CurrentUserDto
   ) {
     // { title: string, body: string, isPublish: boolean, expires: Date }
     // logic for creating blog ==> Service
     // const blogService = new Blogservice
     // this.blogService.create()
-    console.log(body);
-    console.log(body instanceof CreateBlogDto);
-    const result = await this.blogService.create(body);
+    // console.log(body);
+    // console.log(body instanceof CreateBlogDto);
+    const result = await this.blogService.create(body, currentUser.id);
+
     return result;
   }
 
@@ -114,9 +132,10 @@ export class BlogController {
     return 'PUT /blogs';
   }
 
-  @Delete() // DELETE /blogs
-  delete() {
-    return 'DELETE /blogs';
+  @UseFilters(BlogsFilter)
+  @Delete(':id') // DELETE /blogs/:id
+  async delete(@Param('id') id: string) {
+    await this.blogService.delete(id);
   }
 
   @Patch()

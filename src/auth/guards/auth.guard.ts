@@ -1,28 +1,51 @@
+import { IS_PUBLIC } from '@/common/decorators/public.decorator';
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   UnauthorizedException
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly reflector: Reflector
+  ) {}
 
   //
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    // console.log('Auth Guard executed');
     // console.log(context.getType());
     // console.log(context.getArgs()[0]);
     // console.log(context.getClass());
     // console.log(context.getHandler());
     // console.log(context.switchToHttp());
+    const isPublic = this.reflector.getAllAndOverride<boolean | undefined>(
+      IS_PUBLIC,
+      [context.getHandler(), context.getClass()]
+    );
+
+    // const roles = this.reflector.getAllAndOverride<string[]>('ROLE', [
+    //   context.getHandler(),
+    //   context.getClass()
+    // ]);
+
+    // const role = request.user.role as string;
+    // if (roles.includes(role)) {
+    //   return true;
+    // }
+    // throw new ForbiddenException('no permission');
+
+    if (isPublic) return true;
+
     const request = context.switchToHttp().getRequest<Request>(); // function(req,res,next)
     // Authorization: Bearer JWT
-
-    if (request.path === '/auth/login') return true;
 
     const authorization = request.headers.authorization;
     if (!authorization)
@@ -35,6 +58,7 @@ export class AuthGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync<{
         sub: string;
         name: string;
+        // role: 'admin' | 'user';
       }>(token);
       request.user = payload;
 
@@ -45,6 +69,8 @@ export class AuthGuard implements CanActivate {
     } catch {
       throw new UnauthorizedException('Invalid JWT');
     }
+
+    // return true;
   }
 }
 
